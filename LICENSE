@@ -1,4 +1,5 @@
-/*
+The MIT License (MIT)
+
 Copyright © 2024 Ryota Kobayashi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,47 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-*/
-package now_detector
-
-import (
-	"os"
-
-	"golang.org/x/tools/go/packages"
-	"golang.org/x/tools/go/ssa/ssautil"
-
-	"github.com/cokeBeer/goot/pkg/dataflow/toolkits/graph"
-	"github.com/cokeBeer/goot/pkg/dataflow/toolkits/solver"
-)
-
-type Runner struct {
-	pkgPath  string
-	funcName string
-}
-
-func NewRunner(pkg string, fn string) *Runner {
-	return &Runner{
-		pkgPath:  pkg,
-		funcName: fn,
-	}
-}
-
-func (r *Runner) Run() error {
-	cfg := packages.Config{Mode: packages.LoadAllSyntax}
-	initial, err := packages.Load(&cfg, r.pkgPath)
-	if err != nil {
-		return err
-	}
-
-	prog, pkgs := ssautil.AllPackages(initial, 0)
-	prog.Build()
-
-	for _, p := range pkgs {
-		p.Func(r.funcName).WriteTo(os.Stdout)
-		g := graph.New(p.Func(r.funcName))
-		analysis := newNowDetectorAnalysis(g)
-		solver.Solve(analysis, true)
-	}
-
-	return nil
-}

@@ -19,46 +19,48 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package now_detector
+package cmd
 
 import (
+	"nowdet/now_detector"
 	"os"
 
-	"golang.org/x/tools/go/packages"
-	"golang.org/x/tools/go/ssa/ssautil"
-
-	"github.com/cokeBeer/goot/pkg/dataflow/toolkits/graph"
-	"github.com/cokeBeer/goot/pkg/dataflow/toolkits/solver"
+	"github.com/spf13/cobra"
 )
 
-type Runner struct {
-	pkgPath  string
+var rootCmd = &cobra.Command{
+	Use:   "nowdet",
+	Short: "nowdet is a tool to detect insertion of time.Now() in arguments of a function related to Spanner",
+	Long:  `nowdet is a tool to detect insertion of time.Now() in arguments of a function related to Spanner`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if o.pkgName == "" {
+			err := cmd.Help()
+			if err != nil {
+				os.Exit(1)
+			}
+			os.Exit(1)
+		}
+
+		runner := now_detector.NewRunner(o.pkgName, o.funcName)
+		return runner.Run()
+	},
+}
+
+type option struct {
+	pkgName  string
 	funcName string
 }
 
-func NewRunner(pkg string, fn string) *Runner {
-	return &Runner{
-		pkgPath:  pkg,
-		funcName: fn,
+var o option
+
+func Execute() {
+	err := rootCmd.Execute()
+	if err != nil {
+		os.Exit(1)
 	}
 }
 
-func (r *Runner) Run() error {
-	cfg := packages.Config{Mode: packages.LoadAllSyntax}
-	initial, err := packages.Load(&cfg, r.pkgPath)
-	if err != nil {
-		return err
-	}
-
-	prog, pkgs := ssautil.AllPackages(initial, 0)
-	prog.Build()
-
-	for _, p := range pkgs {
-		p.Func(r.funcName).WriteTo(os.Stdout)
-		g := graph.New(p.Func(r.funcName))
-		analysis := newNowDetectorAnalysis(g)
-		solver.Solve(analysis, true)
-	}
-
-	return nil
+func init() {
+	rootCmd.Flags().StringVar(&o.pkgName, "pkg", "", "target package name")
+	rootCmd.Flags().StringVar(&o.funcName, "func", "", "target function name")
 }

@@ -19,46 +19,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package now_detector
+package test
 
 import (
-	"os"
+	"testing"
 
-	"golang.org/x/tools/go/packages"
-	"golang.org/x/tools/go/ssa/ssautil"
-
-	"github.com/cokeBeer/goot/pkg/dataflow/toolkits/graph"
-	"github.com/cokeBeer/goot/pkg/dataflow/toolkits/solver"
+	"nowdet/now_detector"
 )
 
-type Runner struct {
-	pkgPath  string
-	funcName string
-}
-
-func NewRunner(pkg string, fn string) *Runner {
-	return &Runner{
-		pkgPath:  pkg,
-		funcName: fn,
-	}
-}
-
-func (r *Runner) Run() error {
-	cfg := packages.Config{Mode: packages.LoadAllSyntax}
-	initial, err := packages.Load(&cfg, r.pkgPath)
+func Test_Detect(t *testing.T) {
+	r := now_detector.NewRunner("github.com/now_detector/now_detector_test_programs", "insert")
+	err := r.Run()
 	if err != nil {
-		return err
+		t.Error(err)
 	}
-
-	prog, pkgs := ssautil.AllPackages(initial, 0)
-	prog.Build()
-
-	for _, p := range pkgs {
-		p.Func(r.funcName).WriteTo(os.Stdout)
-		g := graph.New(p.Func(r.funcName))
-		analysis := newNowDetectorAnalysis(g)
-		solver.Solve(analysis, true)
-	}
-
-	return nil
 }
