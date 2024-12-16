@@ -127,3 +127,23 @@ func GetIndexAddr(t *testing.T) *ssa.IndexAddr {
 	}
 	return indexAddr
 }
+
+func GetSlice(t *testing.T) *ssa.Slice {
+	pkg := processProg(t, program2)
+	fn := pkg.Func("main")
+	slice, ok := fn.Blocks[0].Instrs[4].(*ssa.Slice)
+	if !ok {
+		t.Fatal(fmt.Sprintf("%t is not a slice", fn.Blocks[0].Instrs[2].String()))
+	}
+	return slice
+}
+
+func GetStore(t *testing.T) *ssa.Store {
+	pkg := processProg(t, program2)
+	fn := pkg.Func("main")
+	store, ok := fn.Blocks[0].Instrs[3].(*ssa.Store)
+	if !ok {
+		t.Fatal(fmt.Sprintf("%t is not a store", fn.Blocks[0].Instrs[2].String()))
+	}
+	return store
+}

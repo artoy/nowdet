@@ -224,7 +224,9 @@ func Test_nowDetectorSwitcher_CaseIndexAddr(t *testing.T) {
 
 func Test_nowDetectorSwitcher_CaseSlice(t *testing.T) {
 	inMap := make(map[any]any)
+	inMap["t0"] = now
 	outMap := make(map[any]any)
+	outMap["t0"] = now
 
 	type fields struct {
 		BaseSwitcher switcher.BaseSwitcher
@@ -232,7 +234,7 @@ func Test_nowDetectorSwitcher_CaseSlice(t *testing.T) {
 		outMap       *map[any]any
 	}
 	type args struct {
-		inst *ssa.IndexAddr
+		inst *ssa.Slice
 	}
 	tests := []struct {
 		name   string
@@ -247,7 +249,7 @@ func Test_nowDetectorSwitcher_CaseSlice(t *testing.T) {
 				outMap:       &outMap,
 			},
 			args: args{
-				inst: testutil.GetIndexAddr(t),
+				inst: testutil.GetSlice(t),
 			},
 		},
 	}
@@ -258,9 +260,55 @@ func Test_nowDetectorSwitcher_CaseSlice(t *testing.T) {
 				inMap:        tt.fields.inMap,
 				outMap:       tt.fields.outMap,
 			}
-			s.CaseIndexAddr(tt.args.inst)
-			expected := tt.args.inst.Name()
-			actual := (*s.outMap)["t0"]
+			s.CaseSlice(tt.args.inst)
+			expected := now
+			actual := (*s.outMap)[tt.args.inst.Name()]
+			if diff := cmp.Diff(expected, actual); diff != "" {
+				t.Errorf("(-want, +got)\n%s", diff)
+			}
+		})
+	}
+}
+
+func Test_nowDetectorSwitcher_CaseStore(t *testing.T) {
+	inMap := make(map[any]any)
+	outMap := make(map[any]any)
+
+	type fields struct {
+		BaseSwitcher switcher.BaseSwitcher
+		inMap        *map[any]any
+		outMap       *map[any]any
+	}
+	type args struct {
+		inst *ssa.Store
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+	}{
+		{
+			name: "Detect",
+			fields: fields{
+				BaseSwitcher: switcher.BaseSwitcher{},
+				inMap:        &inMap,
+				outMap:       &outMap,
+			},
+			args: args{
+				inst: testutil.GetStore(t),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := &nowDetectorSwitcher{
+				BaseSwitcher: tt.fields.BaseSwitcher,
+				inMap:        tt.fields.inMap,
+				outMap:       tt.fields.outMap,
+			}
+			s.CaseStore(tt.args.inst)
+			expected := "t2"
+			actual := (*s.outMap)[tt.args.inst.Addr.Name()]
 			if diff := cmp.Diff(expected, actual); diff != "" {
 				t.Errorf("(-want, +got)\n%s", diff)
 			}
