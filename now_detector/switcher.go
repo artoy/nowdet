@@ -56,7 +56,7 @@ func (s *nowDetectorSwitcher) CaseCall(inst *ssa.Call) {
 	if fn.Pkg.Pkg.Path() == "cloud.google.com/go/spanner" && (slices.Contains(targetSpannerFuncs, fn.Name())) {
 		for _, arg := range inst.Common().Args {
 			if propagate(s.inMap, arg.Name()) == now {
-				(*s.outMap)[inst.Name()] = now
+				(*s.outMap)[inst.Name()] = detected
 				return
 			}
 		}

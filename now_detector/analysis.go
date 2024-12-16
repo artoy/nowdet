@@ -79,7 +79,8 @@ func (a *NowDetectorAnalysis) End(universe []*entry.Entry) {
 
 		for _, v := range *e.OutFlow {
 			if v == detected {
-				fmt.Printf("time.Now() is detected in %d", e.Data.Pos())
+				fmt.Println(fmt.Sprintf("time.Now() is detected in %d", e.Data.String()))
+				return
 			}
 		}
 	}

@@ -56,14 +56,16 @@ func (r *Runner) Run() error {
 	prog.Build()
 
 	for _, p := range pkgs {
+		fn := p.Func(r.funcName)
+
 		if r.isDebug {
-			_, err = p.Func(r.funcName).WriteTo(os.Stdout)
+			_, err = fn.WriteTo(os.Stdout)
 			if err != nil {
 				return err
 			}
 		}
 
-		g := graph.New(p.Func(r.funcName))
+		g := graph.New(fn)
 		analysis := newNowDetectorAnalysis(g, r.isDebug)
 		solver.Solve(analysis, true)
 	}
