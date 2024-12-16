@@ -41,12 +41,14 @@ const (
 type NowDetectorAnalysis struct {
 	*scalar.BaseFlowAnalysis
 	ndaSwitcher *nowDetectorSwitcher
+	isDebug     bool
 }
 
-func newNowDetectorAnalysis(g *graph.UnitGraph) *NowDetectorAnalysis {
+func newNowDetectorAnalysis(g *graph.UnitGraph, isDebug bool) *NowDetectorAnalysis {
 	return &NowDetectorAnalysis{
 		BaseFlowAnalysis: scalar.NewBase(g),
 		ndaSwitcher:      newNowDetectorSwitcher(),
+		isDebug:          isDebug,
 	}
 }
 
@@ -68,6 +70,13 @@ func (a *NowDetectorAnalysis) FlowThrougth(inMap *map[any]any, unit ssa.Instruct
 
 func (a *NowDetectorAnalysis) End(universe []*entry.Entry) {
 	for _, e := range universe {
+		if a.isDebug {
+			fmt.Println(e.InFlow)
+			fmt.Println(e.Data)
+			fmt.Println(e.OutFlow)
+			fmt.Println()
+		}
+
 		for _, v := range *e.OutFlow {
 			if v == detected {
 				fmt.Printf("time.Now() is detected in %d", e.Data.Pos())

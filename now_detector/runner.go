@@ -34,12 +34,14 @@ import (
 type Runner struct {
 	pkgPath  string
 	funcName string
+	isDebug  bool
 }
 
-func NewRunner(pkg string, fn string) *Runner {
+func NewRunner(pkg string, fn string, isDebug bool) *Runner {
 	return &Runner{
 		pkgPath:  pkg,
 		funcName: fn,
+		isDebug:  isDebug,
 	}
 }
 
@@ -54,9 +56,15 @@ func (r *Runner) Run() error {
 	prog.Build()
 
 	for _, p := range pkgs {
-		p.Func(r.funcName).WriteTo(os.Stdout)
+		if r.isDebug {
+			_, err = p.Func(r.funcName).WriteTo(os.Stdout)
+			if err != nil {
+				return err
+			}
+		}
+
 		g := graph.New(p.Func(r.funcName))
-		analysis := newNowDetectorAnalysis(g)
+		analysis := newNowDetectorAnalysis(g, r.isDebug)
 		solver.Solve(analysis, true)
 	}
 

@@ -41,7 +41,7 @@ var rootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		runner := now_detector.NewRunner(o.pkgName, o.funcName)
+		runner := now_detector.NewRunner(o.pkgName, o.funcName, o.isDebug)
 		return runner.Run()
 	},
 }
@@ -49,6 +49,7 @@ var rootCmd = &cobra.Command{
 type option struct {
 	pkgName  string
 	funcName string
+	isDebug  bool
 }
 
 var o option
@@ -63,4 +64,5 @@ func Execute() {
 func init() {
 	rootCmd.Flags().StringVar(&o.pkgName, "pkg", "", "target package name")
 	rootCmd.Flags().StringVar(&o.funcName, "func", "", "target function name")
+	rootCmd.Flags().BoolVar(&o.isDebug, "debug", false, "debug mode")
 }

@@ -28,7 +28,11 @@ import (
 )
 
 func Test_Detect(t *testing.T) {
-	r := now_detector.NewRunner("github.com/now_detector/now_detector_test_programs", "insert")
+	r := now_detector.NewRunner(
+		"github.com/now_detector/now_detector_test_programs",
+		"insert",
+		true,
+	)
 	err := r.Run()
 	if err != nil {
 		t.Error(err)
