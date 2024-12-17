@@ -22,10 +22,11 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"nowdet/now_detector"
 	"os"
 
 	"github.com/spf13/cobra"
+
+	"github.com/artoy/nowdet/now_detector"
 )
 
 var rootCmd = &cobra.Command{

@@ -29,7 +29,7 @@ import (
 	"github.com/cokeBeer/goot/pkg/dataflow/golang/switcher"
 	"github.com/google/go-cmp/cmp"
 
-	"nowdet/now_detector/testutil"
+	"github.com/artoy/nowdet/now_detector/testutil"
 )
 
 func Test_nowDetectorSwitcher_CaseCall(t *testing.T) {

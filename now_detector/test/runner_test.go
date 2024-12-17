@@ -24,7 +24,7 @@ package test
 import (
 	"testing"
 
-	"nowdet/now_detector"
+	"github.com/artoy/nowdet/now_detector"
 )
 
 func Test_Detect(t *testing.T) {
