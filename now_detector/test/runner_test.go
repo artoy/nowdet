@@ -29,7 +29,7 @@ import (
 
 func Test_Detect(t *testing.T) {
 	r := now_detector.NewRunner(
-		"github.com/now_detector/now_detector_test_programs",
+		"nowdet/now_detector/test/programs",
 		"insert",
 		false,
 	)
