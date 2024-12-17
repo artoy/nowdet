@@ -21,7 +21,7 @@ THE SOFTWARE.
 */
 package main
 
-import "nowdet/cmd"
+import "github.com/artoy/nowdet/cmd"
 
 func main() {
 	cmd.Execute()

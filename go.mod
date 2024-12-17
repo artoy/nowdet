@@ -1,4 +1,4 @@
-module nowdet
+module github.com/artoy/nowdet
 
 go 1.23.4
 
