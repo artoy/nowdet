@@ -9,7 +9,7 @@ Nowdet is a tool to detect `time.Now()` in your code is inserted to `allow_commi
 ## Installation
 
 ```bash
-go install github.com/nowdet/nowdet@latest
+go install github.com/artoy/nowdet@latest
 ```
 
 ## Usage
